@@ -184,15 +184,14 @@ class Gols:
 
         while True:
             for atleta in Atletas.listar():
-                print(atleta.get_id())
-                print(gol.get_id_atleta())
+                
                 if atleta.get_id() == gol.get_id_atleta():
                   atleta_encontrado = True
                   break
 
             if atleta_encontrado == True:
-                break
                 print('Atleta inserido com sucesso')
+                break
             
 
             
@@ -219,13 +218,52 @@ class Gols:
             id = g.get_id()
         gol.set_id(id + 1)
 
-        # Adicionar o gol à lista
         self.__lista_gols.append(gol)
         print("Gol inserido com sucesso!")
 
 
 
     def atualizar(self, novo_gol):
+
+
+        atleta_encontrado = False
+
+        while True:
+            for atleta in Atletas.listar():
+                
+                if atleta.get_id() == novo_gol.get_id_atleta():
+                  atleta_encontrado = True
+                  break
+
+            if atleta_encontrado == True:
+                print('Atleta inserido com sucesso')
+                break
+            
+
+            
+            print(f"Erro: Atleta com ID {novo_gol.get_id_atleta()} não encontrado.")
+            novo_gol.set_id_atleta(int(input("Digite novamente o ID do atleta: ")))
+
+
+        jogo_encontrado=False
+        while True:
+            for jogo in Jogos.listar():
+                if jogo.get_id() == novo_gol.get_id_jogo():
+                    jogo_encontrado=True
+                    break
+
+            if jogo_encontrado==True:
+                print('Jogo inserido com sucesso')
+                break
+            
+            print(f"Erro: Jogo com ID {novo_gol.get_id_jogo()} não encontrado.")
+            novo_gol.set_id_jogo(int(input("Digite novamente o ID do jogo: ")))
+
+
+
+
+
+
 
         for gol in self.__lista_gols:
             if gol.get_id()==novo_gol.get_id():
@@ -250,10 +288,8 @@ Jogos = Jogos()
 Gols = Gols()
 
 
-
 class UI:
-  
-    
+    @staticmethod
     def main():
         op = UI.menu_secundario()
         while op != 99:
@@ -269,7 +305,7 @@ class UI:
                     elif op == 4:
                         UI.ExcluirAtleta()
                     op = UI.menu_primario()
-                
+
             elif op == 2:
                 op = UI.menu_primario()
                 while op != 99:
@@ -282,7 +318,7 @@ class UI:
                     elif op == 4:
                         UI.ExcluirJogo()
                     op = UI.menu_primario()
-                
+
             elif op == 3:
                 op = UI.menu_primario()
                 while op != 99:
@@ -297,19 +333,20 @@ class UI:
                     op = UI.menu_primario()
 
             op = UI.menu_secundario()
-    
-    
+
+    @staticmethod
     def menu_secundario():
         print('OPERAÇÕES')
         print('-------------------------------------------------------------------')
         print('Atleta: 1 , Jogo: 2 , Gol: 3 , 99 - Fechar programa')
         return int(input('Digite: '))
 
-    
+    @staticmethod
     def menu_primario():
         print('-------------------------------------------------------------------')
         print('1 - INSERIR , 2 LISTAR , 3 - ATUALIZAR , 4 EXCLUIR , 99 - VOLTAR')
         return int(input('Digite: '))
+
 
     
     def InserirAtleta():
@@ -368,11 +405,12 @@ class UI:
     
     def InserirGol():
         minuto = input('Digite o minuto do Gol: ')
-        id_atleta = input('Digite o id do Atleta: ')
-        id_jogo = input('Digite o id do Jogo: ')
+        id_atleta = int(input('Digite o id do Atleta: '))  # Convertendo para int
+        id_jogo = int(input('Digite o id do Jogo: '))  # Convertendo para int
         Gols.inserir(Gol(0, minuto, id_atleta, id_jogo))
 
-    
+
+        
     def ListarGol():
         for gol in Gols.listar():
             print(gol)
@@ -382,8 +420,8 @@ class UI:
         UI.ListarGol()
         id = int(input('Digite o id que será alterado: '))
         minuto = input('Digite o minuto do Gol: ')
-        id_atleta = input('Digite o id do Atleta: ')
-        id_jogo = input('Digite o id do Jogo: ')
+        id_atleta = int(input('Digite o id do Atleta: '))  # Convertendo para int
+        id_jogo = int(input('Digite o id do Jogo: '))  # Convertendo para int
         Gols.atualizar(Gol(id, minuto, id_atleta, id_jogo))
         print('Gol atualizado com sucesso')
 
