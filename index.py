@@ -6,7 +6,6 @@ class Atleta:
         self.__idade = idade
         self.__posicao = posicao
 
-    # Métodos de acesso
     def get_id(self):
         return self.__id
 
@@ -34,45 +33,12 @@ class Atleta:
     def __str__(self):
         return f"Atleta[ID: {self.__id}, Nome: {self.__nome}, Idade: {self.__idade} , Posição: {self.__posicao}]"
 
-class Atletas:
-    __lista_atletas=[]
-
-    def inserir(self, atleta):
-
-        id = 0
-        for a in self.__lista_atletas:
-            id = a.get_id()
-        atleta.set_id(id + 1)
-        self.__lista_atletas.append(atleta)
-
-
-    def atualizar(self, novo_atleta):
-
-        for atleta in self.__lista_atletas:
-            if atleta.get_id()==novo_atleta.get_id():
-                atleta.set_nome(novo_atleta.get_nome())
-                atleta.set_idade(novo_atleta.get_idade())
-                atleta.set_posicao(novo_atleta.get_posicao())
-                break
-
-    def excluir(self, novo_atleta):
-
-        for atleta in self.__lista_atletas:
-            if atleta.get_id()==novo_atleta.get_id():
-                self.__lista_atletas.remove(atleta)
-                break
-
-    def listar(self):
-        return self.__lista_atletas
-
-
 class Jogo:
     def __init__(self, id, data, local):
         self.__id = id
         self.__data = data
         self.__local = local
 
-    # Métodos de acesso
     def get_id(self):
         return self.__id
 
@@ -94,49 +60,6 @@ class Jogo:
     def __str__(self):
         return f"Jogo[ID: {self.__id}, Data: {self.__data}, Local: {self.__local}]"
     
-
-
-
-class Jogos:
-    __lista_jogos=[]
-
-    def inserir(self, jogo):
-
-        while True:
-            try:
-                datetime.strptime(jogo.get_data(), "%d/%m/%Y")
-                break
-            except ValueError:
-                print("Formato inválido. Tente novamente.")
-            jogo.set_data(input('Digite a data do Jogo (formato DD/MM/AAAA): '))
-
-        id = 0
-        for j in self.__lista_jogos:
-            id = j.get_id()
-        jogo.set_id(id + 1)
-        self.__lista_jogos.append(jogo)
-
-
-    def atualizar(self, novo_jogo):
-
-        for jogo in self.__lista_jogos:
-            if jogo.get_id()==novo_jogo.get_id():
-                jogo.set_data(novo_jogo.get_data())
-                jogo.set_local(novo_jogo.get_local())
-                break
-
-    def excluir(self, novo_jogo):
-
-        for jogo in self.__lista_jogos:
-            if jogo.get_id()==novo_jogo.get_id():
-                self.__lista_jogos.remove(jogo)
-                break
-
-    def listar(self):
-        return self.__lista_jogos
-
-
-
 class Gol:
     def __init__(self, id, minuto, id_atleta, id_jogo):
         self.__id = id
@@ -144,7 +67,6 @@ class Gol:
         self.__id_atleta = id_atleta
         self.__id_jogo = id_jogo
 
-    # Métodos de acesso
     def get_id(self):
         return self.__id
 
@@ -171,6 +93,78 @@ class Gol:
 
     def __str__(self):
         return f"Gol[ID: {self.__id}, Minuto: {self.__minuto}, AtletaID: {self.__id_atleta}, JogoID: {self.__id_jogo}]"
+
+
+
+class Atletas:
+    __lista_atletas=[]
+
+    def inserir(self, atleta):
+
+        id = 0
+        for a in self.__lista_atletas:
+            id = a.get_id()
+        atleta.set_id(id + 1)
+        self.__lista_atletas.append(atleta)
+
+
+    def atualizar(self, atleta):
+
+        for a in self.__lista_atletas:
+            if a.get_id()==atleta.get_id():
+                a.set_nome(atleta.get_nome())
+                a.set_idade(atleta.get_idade())
+                a.set_posicao(atleta.get_posicao())
+                break
+
+    def excluir(self, atleta):
+
+        for a in self.__lista_atletas:
+            if a.get_id()==atleta.get_id():
+                self.__lista_atletas.remove(a)
+                break
+
+    def listar(self):
+        return self.__lista_atletas
+
+
+class Jogos:
+    __lista_jogos=[]
+
+    def inserir(self, jogo):
+
+        while True:
+            try:
+                datetime.strptime(jogo.get_data(), "%d/%m/%Y")
+                break
+            except ValueError:
+                print("Formato inválido. Tente novamente.")
+            jogo.set_data(input('Digite a data do Jogo (formato DD/MM/AAAA): '))
+
+        id = 0
+        for j in self.__lista_jogos:
+            id = j.get_id()
+        jogo.set_id(id + 1)
+        self.__lista_jogos.append(jogo)
+
+
+    def atualizar(self, jogo):
+
+        for j in self.__lista_jogos:
+            if j.get_id()==jogo.get_id():
+                j.set_data(jogo.get_data())
+                j.set_local(jogo.get_local())
+                break
+
+    def excluir(self, jogo):
+
+        for j in self.__lista_jogos:
+            if j.get_id()==jogo.get_id():
+                self.__lista_jogos.remove(j)
+                break
+
+    def listar(self):
+        return self.__lista_jogos
 
 
 
@@ -223,7 +217,7 @@ class Gols:
 
 
 
-    def atualizar(self, novo_gol):
+    def atualizar(self, gol):
 
 
         atleta_encontrado = False
@@ -231,53 +225,47 @@ class Gols:
         while True:
             for atleta in Atletas.listar():
                 
-                if atleta.get_id() == novo_gol.get_id_atleta():
+                if atleta.get_id() == gol.get_id_atleta():
                   atleta_encontrado = True
                   break
 
             if atleta_encontrado == True:
-                print('Atleta inserido com sucesso')
                 break
             
 
             
-            print(f"Erro: Atleta com ID {novo_gol.get_id_atleta()} não encontrado.")
-            novo_gol.set_id_atleta(int(input("Digite novamente o ID do atleta: ")))
+            print(f"Erro: Atleta com ID {gol.get_id_atleta()} não encontrado.")
+            gol.set_id_atleta(int(input("Digite novamente o ID do atleta: ")))
 
 
         jogo_encontrado=False
         while True:
             for jogo in Jogos.listar():
-                if jogo.get_id() == novo_gol.get_id_jogo():
+                if jogo.get_id() == gol.get_id_jogo():
                     jogo_encontrado=True
                     break
 
             if jogo_encontrado==True:
-                print('Jogo inserido com sucesso')
                 break
             
-            print(f"Erro: Jogo com ID {novo_gol.get_id_jogo()} não encontrado.")
-            novo_gol.set_id_jogo(int(input("Digite novamente o ID do jogo: ")))
+            print(f"Erro: Jogo com ID {gol.get_id_jogo()} não encontrado.")
+            gol.set_id_jogo(int(input("Digite novamente o ID do jogo: ")))
 
 
 
-
-
-
-
-        for gol in self.__lista_gols:
-            if gol.get_id()==novo_gol.get_id():
-                gol.set_minuto(novo_gol.get_minuto())
-                gol.set_id_atleta(novo_gol.get_id_atleta())
-                gol.set_id_jogo(novo_gol.get_id_jogo())
+        for g in self.__lista_gols:
+            if g.get_id()==gol.get_id():
+                g.set_minuto(gol.get_minuto())
+                g.set_id_atleta(gol.get_id_atleta())
+                g.set_id_jogo(gol.get_id_jogo())
 
                 break
 
-    def excluir(self, novo_gol):
+    def excluir(self,gol):
 
-        for gol in self.__lista_gols:
-            if gol.get_id()==novo_gol.get_id():
-                self.__lista_gols.remove(gol)
+        for g in self.__lista_gols:
+            if g.get_id()==gol.get_id():
+                self.__lista_gols.remove(g)
                 break
     
     def listar(self):
@@ -289,7 +277,7 @@ Gols = Gols()
 
 
 class UI:
-    @staticmethod
+    
     def main():
         op = UI.menu_secundario()
         while op != 99:
@@ -334,14 +322,14 @@ class UI:
 
             op = UI.menu_secundario()
 
-    @staticmethod
+    
     def menu_secundario():
         print('OPERAÇÕES')
         print('-------------------------------------------------------------------')
         print('Atleta: 1 , Jogo: 2 , Gol: 3 , 99 - Fechar programa')
         return int(input('Digite: '))
 
-    @staticmethod
+    
     def menu_primario():
         print('-------------------------------------------------------------------')
         print('1 - INSERIR , 2 LISTAR , 3 - ATUALIZAR , 4 EXCLUIR , 99 - VOLTAR')
@@ -420,8 +408,8 @@ class UI:
         UI.ListarGol()
         id = int(input('Digite o id que será alterado: '))
         minuto = input('Digite o minuto do Gol: ')
-        id_atleta = int(input('Digite o id do Atleta: '))  # Convertendo para int
-        id_jogo = int(input('Digite o id do Jogo: '))  # Convertendo para int
+        id_atleta = int(input('Digite o id do Atleta: '))  
+        id_jogo = int(input('Digite o id do Jogo: '))  
         Gols.atualizar(Gol(id, minuto, id_atleta, id_jogo))
         print('Gol atualizado com sucesso')
 
