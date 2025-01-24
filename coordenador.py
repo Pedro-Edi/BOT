@@ -53,8 +53,8 @@ class Coordenador(commands.Cog):
             )
             return None
         
-    async def load_demanda_view(self,interaction):
-        demanda_view = DemandaView(self.bot,self,self)
+    async def load_demanda_view(self,interaction,usuario_atual):
+        demanda_view = DemandaView(self.bot,self,usuario_atual)
         message=await interaction.followup.send(view=demanda_view)
         demanda_view.message=message
 
@@ -73,7 +73,7 @@ class Coordenador(commands.Cog):
         
         await interaction.response.send_message("Bem-vindo!")
 
-        await self.load_demanda_view(interaction)
+        await self.load_demanda_view(interaction,self)
 
 
 class DemandaView(View):
@@ -99,8 +99,8 @@ class DemandaView(View):
             return
 
      #FUNÇÃO QUE CARREGA O SUBMENU
-    async def load_filtro_duvidas(self,interaction,duvidas_com_respostas,tipo):
-        menu_view = FiltroDuvidas(self.bot, self.aluno_cog,duvidas_com_respostas,tipo)
+    async def load_filtro_duvidas(self,interaction,duvidas_com_respostas,tipo,usuario_atual):
+        menu_view = FiltroDuvidas(self.bot, self.aluno_cog,duvidas_com_respostas,tipo,usuario_atual)
         message = await interaction.followup.send(view=menu_view)
         menu_view.message = message
         
@@ -110,10 +110,7 @@ class DemandaView(View):
     async def atender_próximo(self, interaction: discord.Interaction, button):
         await self.disable_buttons_and_update(interaction)
         
-
         duvidas_agrupadas=self.aluno_cog.obter_duvidas_nao_respondidas()
-        
-        
 
         if self.usuario_atual in duvidas_agrupadas:
             usuario_selecionado = self.usuario_atual
@@ -129,7 +126,7 @@ class DemandaView(View):
             
             if not usuarios_com_duvidas_ordenadas:
                 await interaction.followup.send("Não há dúvidas pendentes no momento.")
-                await self.aluno_cog.load_demanda_view(interaction)
+                await self.aluno_cog.load_demanda_view(interaction,self.usuario_atual)
                 return
             usuario_selecionado = usuarios_com_duvidas_ordenadas[0][0]
             self.usuario_atual = usuario_selecionado
@@ -203,7 +200,7 @@ class DemandaView(View):
                 f"{chr(10).join([f'- {r}' for r in respostas])}\n"
                 f"O título foi atualizado com as novas respostas.\n\n"
             )
-            await self.aluno_cog.load_demanda_view(interaction)
+            await self.aluno_cog.load_demanda_view(interaction,self.usuario_atual)
             print(f'ola,{self.aluno_cog.obter_duvidas_respondidas()}')
             
             return
@@ -213,21 +210,21 @@ class DemandaView(View):
     async def visualizar_respostas(self, interaction: discord.Interaction, button):
         await self.disable_buttons_and_update(interaction)
         duvidas_com_respostas = self.aluno_cog.obter_duvidas_respondidas()
-        await self.load_filtro_duvidas(interaction,duvidas_com_respostas,"visualizar")
+        await self.load_filtro_duvidas(interaction,duvidas_com_respostas,self.usuario_atual,"visualizar")
 
 
     @button(label="Editar respostas", style=discord.ButtonStyle.success)
     async def editar_respostas(self, interaction: discord.Interaction, button):
         await self.disable_buttons_and_update(interaction)
         duvidas_com_respostas = self.aluno_cog.obter_duvidas_respondidas()
-        await self.load_filtro_duvidas(interaction,duvidas_com_respostas,"editar")
+        await self.load_filtro_duvidas(interaction,duvidas_com_respostas,self.usuario_atual,"editar")
 
 
     @button(label="Deletar respostas", style=discord.ButtonStyle.danger)
     async def deletar_resposta(self, interaction: discord.Interaction, button):
         await self.disable_buttons_and_update(interaction)
         duvidas_com_respostas = self.aluno_cog.obter_duvidas_respondidas()
-        await self.load_filtro_duvidas(interaction,duvidas_com_respostas,"deletar")
+        await self.load_filtro_duvidas(interaction,duvidas_com_respostas,self.usuario_atual,"deletar")
  
                                         
     @button(label="Finalizar demanda", style=discord.ButtonStyle.danger)
@@ -239,12 +236,13 @@ class DemandaView(View):
         )
 
 class FiltroDuvidas(View):
-    def __init__(self, bot, aluno_cog, duvidas,tipo,timeout=10):
+    def __init__(self, bot, aluno_cog, duvidas,tipo,usuario_atual,timeout=10):
         super().__init__(timeout=timeout)
         self.bot = bot
         self.aluno_cog = aluno_cog
         self.duvidas=duvidas
-        self.tipo=tipo        
+        self.tipo=tipo  
+        self.usuario_atual =usuario_atual      
 
     # FUNÇÃO QUE VERIFICA A INTERAÇÃO DO USUÁRIO COM A VIEW DO MENU
     async def on_timeout(self):
@@ -270,7 +268,7 @@ class FiltroDuvidas(View):
 
         if not duvidas_com_respostas:
             await interaction.followup.send("Não há respostas registradas para exibir.")
-            await self.aluno_cog.load_demanda_view(interaction)
+            await self.aluno_cog.load_demanda_view(interaction,self.usuario_atual)
             return
         
       
@@ -350,7 +348,7 @@ class FiltroDuvidas(View):
                     f"**Mensagens:**\n{mensagens_formatadas}\n\n"
                     f"**Respostas:**\n{respostas_formatadas}\n\n"
                 )
-                await self.aluno_cog.load_demanda_view(interaction)
+                await self.aluno_cog.load_demanda_view(interaction,self.usuario_atual)
 
                 return
 
@@ -372,7 +370,7 @@ class FiltroDuvidas(View):
 
         if not duvidas_com_respostas:
             await interaction.followup.send("Não há respostas para exibir.")
-            await self.aluno_cog.load_demanda_view(interaction)
+            await self.aluno_cog.load_demanda_view(interaction,self.usuario_atual)
             return
         
 
@@ -441,7 +439,7 @@ class FiltroDuvidas(View):
 
                 # Esvazia a lista de respostas diretamente no dicionário
                 dados["respostas"] = [] 
-                await self.aluno_cog.load_demanda_view(interaction)
+                await self.aluno_cog.load_demanda_view(interaction,self.usuario_atual)
                 return
 
 
@@ -464,7 +462,7 @@ class FiltroDuvidas(View):
 
         if not duvidas_com_respostas:
             await interaction.followup.send("Não há respostas para exibir.")
-            await self.aluno_cog.load_demanda_view(interaction)
+            await self.aluno_cog.load_demanda_view(interaction,self.usuario_atual)
             return
         
         # Lista usuários com dúvidas respondidas
@@ -571,7 +569,7 @@ class FiltroDuvidas(View):
                     f"**Mensagens:**\n{mensagens_formatadas}\n\n"
                     f"**Respostas:**\n{nova_msg_formatadas}\n\n"
                 )
-                await self.aluno_cog.load_demanda_view(interaction)
+                await self.aluno_cog.load_demanda_view(interaction,self.usuario_atual)
                 return
         
 
