@@ -356,14 +356,25 @@ class FiltroDuvidas(View):
 
     async def show_deletar_respostas(self, interaction: discord.Interaction, duvidas):
 
-        # Filtra as dúvidas que possuem respostas
-        duvidas_com_respostas = duvidas
-    
+        duvidas_com_respostas = {
+        usuario: [
+            dado for dado in lista_duvidas if not dado["dados"].get("visualizada", True)
+        ]
+        for usuario, lista_duvidas in duvidas.items()
+        }
+        duvidas_com_respostas = {usuario: lista for usuario, lista in duvidas_com_respostas.items() if lista}
+
+        await interaction.followup.send(
+            "⚠️ **ATENÇÃO!**\n\n"
+            "🛑 **Somente as dúvidas que NÃO foram visualizadas pelo aluno podem ser editadas.**\n\n"
+            "❌ **Caso o usuário já tenha visualizada você não pode mais alterar**\n"
+        )
 
         if not duvidas_com_respostas:
-            await interaction.followup.send("Não há respostas registradas para exibir.")
+            await interaction.followup.send("Não há respostas para exibir.")
             await self.aluno_cog.load_demanda_view(interaction)
             return
+        
 
         # Lista usuários com dúvidas respondidas
         usuarios_com_respostas = sorted(
@@ -426,9 +437,10 @@ class FiltroDuvidas(View):
                 
                 titulo_selecionado = duvidas_usuario[escolha_titulo_index]
                 dados = titulo_selecionado["dados"]
-                respostas = dados.get("respostas", [])
-                
-                del respostas 
+                dados = titulo_selecionado["dados"]
+
+                # Esvazia a lista de respostas diretamente no dicionário
+                dados["respostas"] = [] 
                 await self.aluno_cog.load_demanda_view(interaction)
                 return
 
@@ -436,14 +448,25 @@ class FiltroDuvidas(View):
     async def show_editar_respostas(self, interaction: discord.Interaction,duvidas):
 
         # Filtra as dúvidas que possuem respostas
-        duvidas_com_respostas = duvidas
+        duvidas_com_respostas = {
+        usuario: [
+            dado for dado in lista_duvidas if not dado["dados"].get("visualizada", True)
+        ]
+        for usuario, lista_duvidas in duvidas.items()
+        }
+        duvidas_com_respostas = {usuario: lista for usuario, lista in duvidas_com_respostas.items() if lista}
+        await interaction.followup.send(
+            "⚠️ **ATENÇÃO!**\n\n"
+            "🛑 **Somente as dúvidas que NÃO foram visualizadas pelo aluno podem ser editadas.**\n\n"
+            "❌ **Caso o usuário já tenha visualizada você não pode mais alterar**\n"
+        )
     
 
         if not duvidas_com_respostas:
-            await interaction.followup.send("Não há respostas registradas para exibir.")
+            await interaction.followup.send("Não há respostas para exibir.")
             await self.aluno_cog.load_demanda_view(interaction)
             return
-
+        
         # Lista usuários com dúvidas respondidas
         usuarios_com_respostas = sorted(
             duvidas_com_respostas.keys(),
@@ -540,7 +563,7 @@ class FiltroDuvidas(View):
 
                     respostas.append(nova_msg)
 
-                nova_msg_formatadas ="\n".join([f"- {msg}" for msg in mensagens]) if mensagens else "Nenhuma mensagem registrada."
+                nova_msg_formatadas ="\n".join([f"- {msg}" for msg in respostas]) if respostas else "Nenhuma resposta registrada."
 
                 await interaction.followup.send(
                     f"**Dúvida atualizada com sucesso**\n\n"
@@ -600,6 +623,7 @@ class FiltroDuvidas(View):
 
         else:
             duvidas_com_respostas=self.duvidas
+        print(duvidas_com_respostas)
 
 
        
