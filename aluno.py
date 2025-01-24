@@ -498,6 +498,8 @@ class FiltroDuvidas(View):
                 for titulo, dados in duvidas.items():
                     mensagens = dados.get("mensagens", [])
                     respostas = dados.get("respostas", [])
+                    if dados.get("respostas"):
+                        dados["visualizada"] = True
                     
                     mensagens_formatadas = "\n".join(
                         [f"- {msg}" for msg in mensagens]) if mensagens else "Nenhuma mensagem registrada."
